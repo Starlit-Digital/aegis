@@ -1,6 +1,6 @@
 # Aegis security model
 
-Version 0.2.0 is an early request normalization and staging service, disabled by default. Report suspected vulnerabilities through the GitHub repository's private vulnerability reporting channel if available. Do not publish secrets or uploaded data in an issue.
+Aegis 0.2.0 is an actively developed request normalization and staging service. Example configurations require explicit local activation. Report suspected vulnerabilities through the GitHub repository's private vulnerability reporting channel if available. Do not publish secrets or uploaded data in an issue.
 
 Untrusted clients control body bytes and ordinary HTTP headers. They cannot read local config, signing keys, storage keys or the spool. The application issuer, local administrator, service user, kernel, Go runtime and reverse proxy remain trusted. A compromised issuer can authorize operations for its subjects. Local administrators and a compromised service process can access plaintext while it is being handled. Encryption of staging does not remove that trust.
 

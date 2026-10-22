@@ -2,7 +2,7 @@
 
 A Go request guardian for PHP applications, with structural request normalization, fixed local backends and encrypted private upload staging.
 
-Version **0.2.0**. Early development. Both example configurations start with `enabled: false`. Building or installing Aegis does not change your application or web server.
+Version **0.2.0**. An active open source project. Both example configurations start with `enabled: false`. Building or installing Aegis does not change your application or web server.
 
 ![Aegis structural proxy verification](docs/screenshots/aegis-proxy-smoke.png)
 
@@ -242,7 +242,7 @@ Successful upload responses contain an ID, byte count, SHA256 and expiry. They n
 
 A future deployment needs a dedicated unprivileged user, a dedicated private spool outside every web root, two distinct 32 byte keys in private files, a patched Go toolchain, and a reviewed proxy and application integration. PHP receives only the ticket signing key, never the storage key or permission to read the spool. `integrations/php/AegisStagingClient.php` is an explicitly loaded reference adapter with a fixed loopback address, no redirects, no proxy, a response size cap and SHA256 verification. It registers no routes.
 
-See [integration boundaries](docs/INTEGRATION.md), [security model](SECURITY.md), [future adoption](docs/ADOPTION.md) and [test evidence](docs/TESTING.md).
+See [integration boundaries](docs/INTEGRATION.md), [security model](SECURITY.md), [deployment planning](docs/ADOPTION.md) and [test evidence](docs/TESTING.md).
 
 ## Scope
 

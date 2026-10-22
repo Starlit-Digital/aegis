@@ -1,9 +1,21 @@
-# Future adoption decision
+# Deployment planning
 
-Aegis was built and tested locally on October 22, 2026. It remains disabled and stopped. No PayCal runtime route, browser flow, autoload configuration or deployment was changed.
+Aegis is an active open source project with separate structural proxy and encrypted staging modes. Building or installing the CLI does not activate an application integration. Both example configurations require an explicit local activation decision.
 
-We can choose bounded JSON batches within the existing application, or introduce Aegis as an isolated byte receiver. Go is the selected prototype because its standard HTTP library and small deployment footprint suit a tightly constrained service. Rust remains a reasonable alternative when its operational and dependency costs fit the team. A WebSocket transport would require another lifetime, origin, admission and backpressure design; the current import workflow does not justify it. HTTP upload plus server progress is sufficient for the prototype.
+## Choose the boundary
 
-Before rollout we need to select a specific workflow and schema, decide whether opaque binary support should be disabled for that instance, establish the application registry and revocation contract, and repair protected persistence and atomic commit. We should measure RSS, CPU, latency, file descriptors and disk usage under worst allowed inputs and stalled clients on the intended Linux host. Aegis has not undergone an independent production security assessment.
+Use proxy mode to rebuild JSON, forms and multipart text fields before a fixed Unix HTTP backend or PHP front controller. Use staging mode for authorized JSON or opaque binary uploads into a private encrypted spool. Use separate processes and accounts for the two modes so the proxy account cannot read staging keys or files.
 
-A pilot would use a separate unprivileged account and private spool, retain the supplied OS caps, and expose only PUT through a reviewed proxy. Keep the current application path behind an explicit feature decision. Rollback stops Aegis, removes its proxy route and abandons ephemeral stages; it does not alter committed business data. Do not enable the example unit or configuration as part of publishing this repository.
+Go provides the standard HTTP library and a small deployment footprint. A WebSocket transport would require a separate lifetime, origin, admission and backpressure design. The current service uses bounded HTTP requests and does not support WebSockets or streamed responses.
+
+## Qualify an integration
+
+Select the workflow and schema, configure narrow host, route, method and format allowlists, and verify compatibility with real application traffic. For staging, establish the application registry, revocation contract, fresh authorization, protected persistence and atomic commit. Choose JSON or opaque binary locally for each staging instance.
+
+Measure RSS, CPU, latency, file descriptors and disk usage under worst allowed inputs and stalled clients on the intended Linux host. Retain the supplied OS caps, patch PHP and restart its workers. Aegis has not undergone an independent production security assessment.
+
+## Pilot and rollback
+
+A staging pilot uses a separate unprivileged account and private spool, and exposes only PUT through a reviewed TLS route. Retrieval stays local. A proxy pilot uses a fixed private backend socket and a separately authorized monitoring listener if needed. Keep a copy of the previous edge configuration, validate changes before reload, and test authenticated and rejected requests.
+
+Rollback restores the saved edge route and stops Aegis after requests drain. Abandon ephemeral staging without altering committed business data. Publishing the repository, downloading a release or running the test suite does not activate a deployment.
