@@ -1,0 +1,12 @@
+> ./build/aegis version
+Aegis 0.1.0
+
+> ./build/aegis selftest
+Aegis selftest | disposable loopback session
+PASS  streamed UTF 8 JSON accepted; encrypted staging
+PASS  replay rejected
+PASS  authenticated single use retrieval matches original bytes
+PASS  consumed object unavailable
+PASS  malformed UTF 8 rejected
+PASS  body above local byte ceiling rejected
+PASS  local test complete; server closed and staging removed on return

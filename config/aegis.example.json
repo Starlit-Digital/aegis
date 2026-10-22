@@ -1,0 +1,22 @@
+{
+  "enabled": false,
+  "listen": "127.0.0.1:8098",
+  "staging_dir": "/var/lib/aegis",
+  "token_key_file": "/etc/aegis/token.key",
+  "storage_key_file": "/etc/aegis/storage.key",
+  "policy": {
+    "purpose": "account-import",
+    "content_type": "application/json",
+    "max_bytes": 1048576,
+    "max_concurrent": 2,
+    "max_staged": 16,
+    "max_per_subject": 2,
+    "max_depth": 16,
+    "max_tokens": 10000,
+    "max_string_bytes": 4096,
+    "request_seconds": 15,
+    "retention_seconds": 300,
+    "ticket_seconds": 60,
+    "origins": []
+  }
+}

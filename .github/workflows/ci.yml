@@ -1,0 +1,20 @@
+name: Verify Aegis
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - run: make verify
+      - run: make compile
+      - run: ./build/aegis selftest
+      - run: sudo apt-get update && sudo apt-get install -y php-cli php-curl
+      - run: php -l integrations/php/AegisStagingClient.php && python3 scripts/smoke.py
+      - run: GOOS=darwin GOARCH=arm64 go build -o build/aegis-darwin-arm64 ./cmd/aegis

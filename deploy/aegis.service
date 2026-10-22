@@ -1,0 +1,36 @@
+# Reference only. Do not enable until an application integration is approved.
+[Unit]
+Description=Aegis upload guardian
+After=network.target
+[Service]
+Type=simple
+User=aegis
+Group=aegis
+ExecStart=/home/aegis/.local/bin/aegis serve --config /etc/aegis/config.json
+UMask=0077
+StateDirectory=aegis
+StateDirectoryMode=0700
+MemoryMax=96M
+MemoryHigh=64M
+MemorySwapMax=0
+CPUQuota=100%
+TasksMax=32
+LimitNOFILE=128
+TimeoutStopSec=20
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+ReadWritePaths=/var/lib/aegis
+Restart=no
+# Deliberately no Install section: enabling requires an explicit deployment decision.
