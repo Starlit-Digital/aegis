@@ -1,6 +1,6 @@
 # Deployment planning
 
-Aegis is an active open source project with separate structural proxy and encrypted staging modes. Building or installing the CLI does not activate an application integration. Both example configurations require an explicit local activation decision.
+aegis is an active open source project with separate structural proxy and encrypted staging modes. Building or installing the CLI does not activate an application integration. Both example configurations require an explicit local activation decision.
 
 ## Choose the boundary
 
@@ -12,10 +12,10 @@ Go provides the standard HTTP library and a small deployment footprint. A WebSoc
 
 Select the workflow and schema, configure narrow host, route, method and format allowlists, and verify compatibility with real application traffic. For staging, establish the application registry, revocation contract, fresh authorization, protected persistence and atomic commit. Choose JSON or opaque binary locally for each staging instance.
 
-Measure RSS, CPU, latency, file descriptors and disk usage under worst allowed inputs and stalled clients on the intended Linux host. Retain the supplied OS caps, patch PHP and restart its workers. Aegis has not undergone an independent production security assessment.
+Measure RSS, CPU, latency, file descriptors and disk usage under worst allowed inputs and stalled clients on the intended Linux host. Retain the supplied OS caps, patch PHP and restart its workers. aegis has not undergone an independent production security assessment.
 
 ## Pilot and rollback
 
 A staging pilot uses a separate unprivileged account and private spool, and exposes only PUT through a reviewed TLS route. Retrieval stays local. A proxy pilot uses a fixed private backend socket and a separately authorized monitoring listener if needed. Keep a copy of the previous edge configuration, validate changes before reload, and test authenticated and rejected requests.
 
-Rollback restores the saved edge route and stops Aegis after requests drain. Abandon ephemeral staging without altering committed business data. Publishing the repository, downloading a release or running the test suite does not activate a deployment.
+Rollback restores the saved edge route and stops aegis after requests drain. Abandon ephemeral staging without altering committed business data. Publishing the repository, downloading a release or running the test suite does not activate a deployment.

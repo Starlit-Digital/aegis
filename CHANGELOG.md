@@ -1,5 +1,9 @@
 # Changes
 
+## 0.2.1
+
+* Use lowercase aegis consistently across the CLI, documentation, PHP reference names, assets and release metadata.
+
 ## 0.2.0
 
 * Add opt in structural proxy mode, inspired by Qbix/proxy and implemented independently in Go.

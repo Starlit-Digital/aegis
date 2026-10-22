@@ -34,7 +34,7 @@ func (c Config) Validate() error {
 		return errors.New("invalid local purpose")
 	}
 	if c.MaxBytes < 1 || c.MaxBytes > 1<<20 || c.MaxConcurrent < 1 || c.MaxConcurrent > 2 || c.MaxStaged < 1 || c.MaxStaged > 16 || c.MaxPerSubject < 1 || c.MaxPerSubject > 2 || c.MaxDepth < 1 || c.MaxDepth > 16 || c.MaxTokens < 1 || c.MaxTokens > 10000 || c.MaxStringBytes < 1 || c.MaxStringBytes > 4096 || c.RequestSeconds < 1 || c.RequestSeconds > 15 || c.RetentionSeconds < 1 || c.RetentionSeconds > 300 || c.TicketSeconds < 1 || c.TicketSeconds > 60 {
-		return errors.New("config exceeds Aegis hard ceilings")
+		return errors.New("config exceeds aegis hard ceilings")
 	}
 	return nil
 }

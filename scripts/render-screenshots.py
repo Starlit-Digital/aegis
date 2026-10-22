@@ -4,14 +4,14 @@ import html, pathlib, subprocess
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 root=pathlib.Path(__file__).resolve().parents[1];out=root/'docs/screenshots';out.mkdir(parents=True,exist_ok=True)
 font='/System/Library/Fonts/Menlo.ttc';ui='/System/Library/Fonts/Helvetica.ttc'
-cases=[('aegis-selftest','Aegis · Local selftest',[('./build/aegis version',['./build/aegis','version']),('./build/aegis selftest',['./build/aegis','selftest'])]),('aegis-php-smoke','Aegis · PHP interoperability',[('python3 scripts/smoke.py',['python3','scripts/smoke.py'])])]
-cases.append(('aegis-proxy-smoke','Aegis · Structural proxy and PHP FPM',[('python3 scripts/proxy-smoke.py',['python3','scripts/proxy-smoke.py'])]))
+cases=[('aegis-selftest','aegis · Local selftest',[('./build/aegis version',['./build/aegis','version']),('./build/aegis selftest',['./build/aegis','selftest'])]),('aegis-php-smoke','aegis · PHP interoperability',[('python3 scripts/smoke.py',['python3','scripts/smoke.py'])])]
+cases.append(('aegis-proxy-smoke','aegis · Structural proxy and PHP FPM',[('python3 scripts/proxy-smoke.py',['python3','scripts/proxy-smoke.py'])]))
 for slug,title,commands in cases:
     lines=[]
     for label,args in commands:
         result=subprocess.run(args,cwd=root,capture_output=True,text=True,check=True)
         if result.stderr:raise RuntimeError(result.stderr)
-        lines.append(('> '+label,'#f2e7d4'));lines.extend((line,'#e8c58e' if line.startswith('Aegis 0.') else '#bacbd1') for line in result.stdout.splitlines());lines.append(('', '#bacbd1'))
+        lines.append(('> '+label,'#f2e7d4'));lines.extend((line,'#e8c58e' if line.startswith('aegis 0.') else '#bacbd1') for line in result.stdout.splitlines());lines.append(('', '#bacbd1'))
     transcript='\n'.join(line for line,_ in lines).rstrip()+'\n';(out/(slug+'.txt')).write_text(transcript)
     scale=2;im=Image.new('RGB',(1280*scale,720*scale));px=im.load()
     for y in range(im.height):

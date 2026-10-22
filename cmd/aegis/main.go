@@ -25,7 +25,7 @@ import (
 	"github.com/Starlit-Digital/aegis/internal/structuralproxy"
 )
 
-var version = "0.2.0"
+var version = "0.2.1"
 
 type localConfig struct {
 	Mode           string                 `json:"mode"`
@@ -122,12 +122,12 @@ func run(args []string) error {
 	runtime.GOMAXPROCS(2)
 	debug.SetMemoryLimit(32 << 20)
 	if len(args) == 0 || args[0] == "help" || args[0] == "--help" || args[0] == "-h" {
-		fmt.Println("Aegis, the request and upload guardian\nUsage: aegis version | selftest | check --config FILE | serve --config FILE | plan --config FILE --server nginx|apache|caddy\nDisabled by default. Policy comes only from local configuration.")
+		fmt.Println("aegis, the request and upload guardian\nUsage: aegis version | selftest | check --config FILE | serve --config FILE | plan --config FILE --server nginx|apache|caddy\nDisabled by default. Policy comes only from local configuration.")
 		return nil
 	}
 	switch args[0] {
 	case "version":
-		fmt.Println("Aegis " + version)
+		fmt.Println("aegis " + version)
 		return nil
 	case "selftest":
 		return gateway.SelfTest(os.Stdout)
@@ -155,7 +155,7 @@ func run(args []string) error {
 		return structuralproxy.Plan(os.Stdout, c.Proxy, c.Listen, *server)
 	}
 	if args[0] == "check" {
-		fmt.Printf("Aegis config valid; mode=%s; enabled=%t; policy=local-only\n", c.Mode, c.Enabled)
+		fmt.Printf("aegis config valid; mode=%s; enabled=%t; policy=local-only\n", c.Mode, c.Enabled)
 		return nil
 	}
 	if !c.Enabled {
@@ -230,7 +230,7 @@ func run(args []string) error {
 	go func() { done <- srv.Serve(ln) }()
 	tick := time.NewTicker(time.Second)
 	defer tick.Stop()
-	fmt.Printf("Aegis listening on %s; mode=%s; policy=local-only\n", listener.Addr(), c.Mode)
+	fmt.Printf("aegis listening on %s; mode=%s; policy=local-only\n", listener.Addr(), c.Mode)
 	var serveErr error
 loop:
 	for {
@@ -255,7 +255,7 @@ loop:
 	if serveErr != nil && serveErr != http.ErrServerClosed {
 		return serveErr
 	}
-	fmt.Println("Aegis stopped; temporary resources closed")
+	fmt.Println("aegis stopped; temporary resources closed")
 	return nil
 }
 

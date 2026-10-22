@@ -1,8 +1,8 @@
-# Aegis
+# aegis
 
 Read README.md and SECURITY.md before changing the service boundary.
 
-Aegis is an active project. Do not activate an application integration or service deployment without user authorization. Keep customer specific integration status out of public documentation. Tests may use disposable loopback listeners, private temporary keys and staging, with cleanup on exit. Never add automatic startup or public retrieval routes as a side effect of building or installing.
+aegis is an active project. Do not activate an application integration or service deployment without user authorization. Keep customer specific integration status out of public documentation. Tests may use disposable loopback listeners, private temporary keys and staging, with cleanup on exit. Never add automatic startup or public retrieval routes as a side effect of building or installing.
 
 Policy belongs to local startup config with compiled upper bounds. Headers, tickets, query values and body content must never change resource ceilings, filesystem paths or trusted identity. Preserve the operation, subject, purpose and opaque ID binding. PHP must not read the spool or storage key.
 

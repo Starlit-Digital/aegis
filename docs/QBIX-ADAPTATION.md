@@ -1,10 +1,10 @@
 # Structural proxy implementation notes
 
-We reviewed [Qbix/proxy](https://github.com/Qbix/proxy) at commit `5a9f8a96f4bdaaaa5444b6986853e9b9724a94bc`, including its request sanitizer, HTTP and FastCGI transports, routing, statistics and deployment examples. Aegis implements the useful architectural ideas independently in Go. No upstream C source is copied or linked. Qbix/proxy is MIT licensed; Aegis remains under its existing 0BSD license.
+We reviewed [Qbix/proxy](https://github.com/Qbix/proxy) at commit `5a9f8a96f4bdaaaa5444b6986853e9b9724a94bc`, including its request sanitizer, HTTP and FastCGI transports, routing, statistics and deployment examples. aegis implements the useful architectural ideas independently in Go. No upstream C source is copied or linked. Qbix/proxy is MIT licensed; aegis remains under its existing 0BSD license.
 
-The central improvement is a separate request boundary: parse constrained input, build a fresh representation, then forward to an administrator selected backend. We preserve Aegis staging as a separate mode so normalization cannot weaken exact byte receipts, user binding or private storage ownership.
+The central improvement is a separate request boundary: parse constrained input, build a fresh representation, then forward to an administrator selected backend. We preserve aegis staging as a separate mode so normalization cannot weaken exact byte receipts, user binding or private storage ownership.
 
-| Idea | Aegis implementation | Reason for adaptation |
+| Idea | aegis implementation | Reason for adaptation |
 | --- | --- | --- |
 | Structural request rebuilding | Strict JSON, query and URL encoded parsers, followed by regeneration | Grammar, Unicode, duplicate names and decoded limits are checked before forwarding. |
 | Multipart processing before PHP | Text fields become URL encoded forms; file parts are rejected | PHP receives no multipart body through this mode. Uploads use private staging and application grants. |
@@ -26,7 +26,7 @@ The tradeoffs are real. Rebuilding changes byte signatures. Strict field names e
 
 The tests must show normalized bytes at a real Unix HTTP backend, a FastCGI responder and, where installed, isolated PHP FPM. Rejected inputs must reach no backend. Configuration snapshots must be immutable. Oversize requests and responses, timeouts, header aliases, private metrics and shutdown must fail safely. Existing encrypted staging and PHP adapter tests must continue passing.
 
-Neither example configuration is enabled. Building, testing and releasing the feature does not activate it in an application. Adoption requires reviewing the edge route, fixed socket permissions, patched PHP, cgroup limits and application compatibility. Rollback restores the saved edge configuration and stops Aegis after draining; PHP patches and prior restrictions remain in place.
+Neither example configuration is enabled. Building, testing and releasing the feature does not activate it in an application. Adoption requires reviewing the edge route, fixed socket permissions, patched PHP, cgroup limits and application compatibility. Rollback restores the saved edge configuration and stops aegis after draining; PHP patches and prior restrictions remain in place.
 
 ## Evidence limits
 

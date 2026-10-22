@@ -1,8 +1,8 @@
 > ./build/aegis version
-Aegis 0.2.0
+aegis 0.2.1
 
 > ./build/aegis selftest
-Aegis selftest | disposable loopback session
+aegis selftest | disposable loopback session
 PASS  streamed UTF 8 JSON accepted; encrypted staging
 PASS  replay rejected
 PASS  authenticated single use retrieval matches original bytes

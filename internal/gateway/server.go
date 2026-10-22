@@ -402,7 +402,7 @@ func (s *Server) retrieve(w http.ResponseWriter, r *http.Request, t Ticket) {
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", "attachment; filename=staged-upload.bin")
 	w.Header().Set("Content-Length", fmt.Sprint(o.bytes))
-	w.Header().Set("X-Aegis-SHA256", o.digest)
+	w.Header().Set("X-aegis-SHA256", o.digest)
 	// The spool is private to the service user; OS sandboxing prevents other writers.
 	if e := decrypt(w, f, a, t.ID, o.bytes); e != nil {
 		panic(http.ErrAbortHandler)

@@ -13,8 +13,8 @@ with tempfile.TemporaryDirectory(prefix='aegis-smoke-') as tmp:
     config=d/'config.json';config.write_text(json.dumps(cfg));config.chmod(0o600)
     proc=subprocess.Popen([str(root/'build/aegis'),'serve','--config',str(config)],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
     def php(code,*args):
-        return subprocess.check_output(['php','-r',code,str(root/'integrations/php/AegisStagingClient.php'),endpoint,str(d/'token.key'),*args],text=True)
-    bootstrap='require $argv[1]; $c=new \\StarlitDigital\\Aegis\\AegisStagingClient($argv[2],$argv[3]); '
+        return subprocess.check_output(['php','-r',code,str(root/'integrations/php/aegisStagingClient.php'),endpoint,str(d/'token.key'),*args],text=True)
+    bootstrap='require $argv[1]; $c=new \\StarlitDigital\\aegis\\aegisStagingClient($argv[2],$argv[3]); '
     try:
         for _ in range(100):
             if proc.poll() is not None:raise RuntimeError(proc.stderr.read())
@@ -29,7 +29,7 @@ with tempfile.TemporaryDirectory(prefix='aegis-smoke-') as tmp:
         res=conn.getresponse();receipt=json.loads(res.read());assert res.status==201;conn.close()
         assert receipt['sha256']==hashlib.sha256(body).hexdigest()
         print('PASS  PHP issued a user and purpose bound upload grant')
-        print('PASS  Aegis streamed Unicode JSON into encrypted staging')
+        print('PASS  aegis streamed Unicode JSON into encrypted staging')
         result=php(bootstrap+'echo $c->consume("demo_actor",$argv[4]);',ticket['id']).encode()
         assert result==body
         print('PASS  PHP consumed the exact bytes with SHA256 verification')

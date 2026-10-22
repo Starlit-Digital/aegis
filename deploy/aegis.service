@@ -1,6 +1,6 @@
 # Reference only. Do not enable until an application integration is approved.
 [Unit]
-Description=Aegis upload guardian
+Description=aegis upload guardian
 After=network.target
 [Service]
 Type=simple

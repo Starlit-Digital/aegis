@@ -1,12 +1,16 @@
-# Aegis
+# aegis
 
 A Go request guardian for PHP applications, with structural request normalization, fixed local backends and encrypted private upload staging.
 
-Version **0.2.0**. An active open source project. Both example configurations start with `enabled: false`. Building or installing Aegis does not change your application or web server.
+Version **0.2.1**. An active open source project. Both example configurations start with `enabled: false`. Building or installing aegis does not change your application or web server.
 
-![Aegis structural proxy verification](docs/screenshots/aegis-proxy-smoke.png)
+![aegis structural proxy verification](docs/screenshots/aegis-proxy-smoke.png)
 
-Aegis separates receiving untrusted bytes from an application's authorization and business operations. It accepts a short signed grant, measures the actual stream, validates JSON when that format is selected, and stages encrypted bytes outside the web root. A separate grant permits one retrieval by the same user and purpose. An opaque object identifier is never a public download URL.
+aegis separates receiving untrusted bytes from an application's authorization and business operations. It accepts a short signed grant, measures the actual stream, validates JSON when that format is selected, and stages encrypted bytes outside the web root. A separate grant permits one retrieval by the same user and purpose. An opaque object identifier is never a public download URL.
+
+## The name
+
+The name comes from the [aegis of Greek mythology](https://en.wikipedia.org/wiki/Aegis), associated with Zeus and Athena and often described as a shield or protective covering. Its later meaning of protection inspired this project’s name.
 
 ## Choose a use case
 
@@ -24,9 +28,9 @@ Aegis separates receiving untrusted bytes from an application's authorization an
 A process runs one mode. Use separate processes, ports and accounts if you need both boundaries. The proxy account must not have staging spool or storage key access. Proxy mode never exposes staging retrieval or monitoring through its public handler.
 
 ```text
-Client → TLS web server → Aegis proxy → fixed Unix socket → PHP front controller
-Client → authorized upload route → Aegis staging → encrypted private spool
-Application → separate authorized read grant → Aegis staging → application validation
+Client → TLS web server → aegis proxy → fixed Unix socket → PHP front controller
+Client → authorized upload route → aegis staging → encrypted private spool
+Application → separate authorized read grant → aegis staging → application validation
 ```
 
 ## Build and try it
@@ -58,7 +62,7 @@ chmod 0755 aegis-darwin-arm64
 
 ## Run a PHP API proxy
 
-Patch PHP first. Choose the exact front controller and socket for your own application. The example assumes a PHP FPM pool reachable at `/run/php/app.sock`, with `/srv/app/public/index.php` as its entry point. Configure the pool socket owner and group to allow only Aegis to connect. Keep the pool off public TCP listeners.
+Patch PHP first. Choose the exact front controller and socket for your own application. The example assumes a PHP FPM pool reachable at `/run/php/app.sock`, with `/srv/app/public/index.php` as its entry point. Configure the pool socket owner and group to allow only aegis to connect. Keep the pool off public TCP listeners.
 
 ```sh
 cp config/aegis.proxy.example.json /tmp/aegis-proxy.json
@@ -105,7 +109,7 @@ For an existing HTTP application on a private Unix socket, replace the route wit
 }
 ```
 
-Remove the FastCGI specific fields from that route. Aegis never follows redirects, retries a backend request, performs DNS lookup for the backend, or uses an environment proxy.
+Remove the FastCGI specific fields from that route. aegis never follows redirects, retries a backend request, performs DNS lookup for the backend, or uses an environment proxy.
 
 ### Proxy compatibility rules
 
@@ -155,9 +159,9 @@ Edit the copied config to point `staging_dir` to `/tmp/aegis-local/spool`, the t
 In PHP, explicitly load the adapter and issue a grant only after checking the current session and the user's right to start the import:
 
 ```php
-require '/path/to/aegis/integrations/php/AegisStagingClient.php';
+require '/path/to/aegis/integrations/php/aegisStagingClient.php';
 
-$client = new \StarlitDigital\Aegis\AegisStagingClient(
+$client = new \StarlitDigital\aegis\aegisStagingClient(
     'http://127.0.0.1:8098/v1/uploads',
     '/tmp/aegis-local/token.key'
 );
@@ -170,7 +174,7 @@ For a local test, supply that upload token securely to curl:
 
 ```sh
 curl --noproxy '*' -X PUT http://127.0.0.1:8098/v1/uploads \
-  -H "Authorization: Bearer $AEGIS_UPLOAD_TOKEN" \
+  -H "Authorization: Bearer $aegis_UPLOAD_TOKEN" \
   -H 'Content-Type: application/json' --data-binary @accounts.json
 ```
 
@@ -189,11 +193,11 @@ For binary staging, use a separate instance and set `policy.content_type` to `ap
 
 ## Web server integration and rollback
 
-Generate examples with `aegis plan --config FILE --server nginx`, `apache` or `caddy`. These commands only print text. Review the output inside your existing TLS virtual host. Preserve static assets at the edge, send only reviewed application paths to Aegis, and prevent direct access to the PHP backend. Remove incoming forwarded headers, including any extra ones your edge adds. With nginx, request buffering must remain on. In Apache, `ProxyAddHeaders Off` avoids generated forwarded headers. Caddy transport behavior must be verified against the chunked ingress restriction before deployment.
+Generate examples with `aegis plan --config FILE --server nginx`, `apache` or `caddy`. These commands only print text. Review the output inside your existing TLS virtual host. Preserve static assets at the edge, send only reviewed application paths to aegis, and prevent direct access to the PHP backend. Remove incoming forwarded headers, including any extra ones your edge adds. With nginx, request buffering must remain on. In Apache, `ProxyAddHeaders Off` avoids generated forwarded headers. Caddy transport behavior must be verified against the chunked ingress restriction before deployment.
 
 Back up the current server configuration. Test the proposed configuration with `nginx -t`, `apachectl configtest` or `caddy validate --config FILE`, then exercise representative authenticated requests, rejected inputs, timeouts and application errors on a separate instance. Review socket ownership, PHP patches, worker restarts and the Linux resource limits in [deploy/aegis.service](deploy/aegis.service). Update that reference service's local config path for the chosen mode. A proxy instance needs access to its configured Unix sockets, not the staging spool or PHP source tree. Keep the monitoring port off public routes.
 
-To roll back, stop sending traffic to Aegis and restore the saved edge configuration, validate it and reload the edge. Keep PHP patched and any previously configured upload restrictions in place. Stop Aegis with SIGTERM after requests drain. The repository creates no automatic startup configuration.
+To roll back, stop sending traffic to aegis and restore the saved edge configuration, validate it and reload the edge. Keep PHP patched and any previously configured upload restrictions in place. Stop aegis with SIGTERM after requests drain. The repository creates no automatic startup configuration.
 
 ## Local policy
 
@@ -232,7 +236,7 @@ The ticket grants an operation and identity. It cannot choose quotas, storage, t
 
 The default local policy accepts only `application/json`, optionally with `charset=utf-8`. An operator can instead configure a separate opaque binary instance with `content_type: application/octet-stream`; a request cannot switch off JSON validation by choosing a different header. Other media types, multipart, content encodings, trailers and duplicated application headers are rejected. JSON requires valid UTF 8, correctly paired escaped surrogates, unique object keys, bounded depth and tokens, and a single complete value. Unicode is preserved, not converted to ASCII. Opaque binary bytes are not treated as text or declared safe content. No archive, image, office document or executable parser runs.
 
-`Content-Length` is an early rejection hint, never the byte authority. Chunked requests still pass through the same actual byte limit. Aegis rejects forwarded identity headers and ignores request headers purporting to change its limits. A future proxy must strip forwarded headers and must not buffer large bodies in PHP. Aegis never uses proxy headers to identify a user, select a filesystem destination, determine a trusted scheme or relax policy. Explicit browser Origins must match the local list; the default accepts no Origin. There is no permissive CORS response.
+`Content-Length` is an early rejection hint, never the byte authority. Chunked requests still pass through the same actual byte limit. aegis rejects forwarded identity headers and ignores request headers purporting to change its limits. A future proxy must strip forwarded headers and must not buffer large bodies in PHP. aegis never uses proxy headers to identify a user, select a filesystem destination, determine a trusted scheme or relax policy. Explicit browser Origins must match the local list; the default accepts no Origin. There is no permissive CORS response.
 
 Successful upload responses contain an ID, byte count, SHA256 and expiry. They never contain a storage path. Unknown or differently owned IDs return the same 404. Responses use no store caching and a restrictive content security policy. Logs do not include tickets, payloads or uploaded names.
 
@@ -240,13 +244,13 @@ Successful upload responses contain an ID, byte count, SHA256 and expiry. They n
 
 `config/aegis.example.json` has `enabled: false`. `aegis check --config FILE` validates local configuration without opening a listener. `serve` refuses disabled configuration. There is no automatic launch agent, application include, reverse proxy route, scheduled task or enabled systemd unit. The reference unit has no Install section.
 
-A future deployment needs a dedicated unprivileged user, a dedicated private spool outside every web root, two distinct 32 byte keys in private files, a patched Go toolchain, and a reviewed proxy and application integration. PHP receives only the ticket signing key, never the storage key or permission to read the spool. `integrations/php/AegisStagingClient.php` is an explicitly loaded reference adapter with a fixed loopback address, no redirects, no proxy, a response size cap and SHA256 verification. It registers no routes.
+A future deployment needs a dedicated unprivileged user, a dedicated private spool outside every web root, two distinct 32 byte keys in private files, a patched Go toolchain, and a reviewed proxy and application integration. PHP receives only the ticket signing key, never the storage key or permission to read the spool. `integrations/php/aegisStagingClient.php` is an explicitly loaded reference adapter with a fixed loopback address, no redirects, no proxy, a response size cap and SHA256 verification. It registers no routes.
 
 See [integration boundaries](docs/INTEGRATION.md), [security model](SECURITY.md), [deployment planning](docs/ADOPTION.md) and [test evidence](docs/TESTING.md).
 
 ## Scope
 
-Aegis provides request normalization and constrained staging. It does not scan for malware, serve public files, validate domain schemas or replace application authorization. The application must still validate records, confirm sensitive operations, encrypt business data and commit atomically. A valid JSON document is not automatically a valid account import. Existing PHP installations still require the complete PHP2Shell runtime patches.
+aegis provides request normalization and constrained staging. It does not scan for malware, serve public files, validate domain schemas or replace application authorization. The application must still validate records, confirm sensitive operations, encrypt business data and commit atomically. A valid JSON document is not automatically a valid account import. Existing PHP installations still require the complete PHP2Shell runtime patches.
 
 ## PHP security notices and design references
 
@@ -254,13 +258,13 @@ The October 21, 2026 disclosures describe two related PHP core issues. [CVE-2026
 
 The [official PHP security notice](https://www.php.net/archive/2026.php#2026-10-21-5) identifies PHP 8.2.35, 8.3.36, 8.4.27 and 8.5.12 as the fixed releases. Use a supported patched release or verify your vendor's backport. The [PHP Foundation explanation](https://thephp.foundation/blog/2026/10/21/todays-php-security-release-and-how-were-strengthening-php-security/) covers the discovery and remediation work. Its community notices include [PHP 8.5.12](https://discourse.thephp.foundation/t/announce-php-8-5-12-released/6288), [PHP 8.4.27](https://discourse.thephp.foundation/t/php-php-8-4-27-released/6286), [PHP 8.3.36](https://discourse.thephp.foundation/t/announce-php-8-3-36-released/6283), and [PHP 8.2.35](https://discourse.thephp.foundation/t/php-dev-php-8-2-35-released/6276).
 
-Aegis reduces exposure through bounded parsing, normalization and upload isolation. It does not repair PHP memory management, cover every application execution path, or guarantee protection against these or future vulnerabilities. Update PHP and restart its workers. Disable unused `session.upload_progress.enabled` in startup configuration, rather than relying on application `ini_set()` after parsing has begun.
+aegis reduces exposure through bounded parsing, normalization and upload isolation. It does not repair PHP memory management, cover every application execution path, or guarantee protection against these or future vulnerabilities. Update PHP and restart its workers. Disable unused `session.upload_progress.enabled` in startup configuration, rather than relying on application `ini_set()` after parsing has begun.
 
-[Qbix/proxy](https://github.com/Qbix/proxy) inspired the optional structural proxy boundary. See [the implementation and adaptation notes](docs/QBIX-ADAPTATION.md) for the reviewed revision, adopted ideas, compatibility choices and exclusions. Aegis's Go implementation was written independently; no Qbix C source is incorporated.
+[Qbix/proxy](https://github.com/Qbix/proxy) inspired the optional structural proxy boundary. See [the implementation and adaptation notes](docs/QBIX-ADAPTATION.md) for the reviewed revision, adopted ideas, compatibility choices and exclusions. aegis's Go implementation was written independently; no Qbix C source is incorporated.
 
 ## Help is welcome
 
-Help is welcome. We welcome practical integration reports, parser edge cases, security review, accessibility and documentation improvements, and tests against real PHP applications. Open an issue with the Aegis version, operating system, PHP version, a minimal configuration without secrets, expected behavior and a small synthetic reproduction. Never include production uploads, cookies, tickets, private keys or personal information. For suspected vulnerabilities, follow [SECURITY.md](SECURITY.md).
+Help is welcome. We welcome practical integration reports, parser edge cases, security review, accessibility and documentation improvements, and tests against real PHP applications. Open an issue with the aegis version, operating system, PHP version, a minimal configuration without secrets, expected behavior and a small synthetic reproduction. Never include production uploads, cookies, tickets, private keys or personal information. For suspected vulnerabilities, follow [SECURITY.md](SECURITY.md).
 
 Before a pull request, run `make verify`, `make compile`, `./build/aegis selftest`, `python3 scripts/proxy-smoke.py` and, when PHP cURL is available, `python3 scripts/smoke.py`. Preserve local policy ownership, compiled ceilings, fixed backend selection and private upload ownership. Document compatibility changes and keep examples disabled by default.
 

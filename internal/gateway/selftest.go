@@ -58,7 +58,7 @@ func SelfTest(out io.Writer) error {
 		data, e := io.ReadAll(res.Body)
 		return res.StatusCode, data, e
 	}
-	fmt.Fprintln(out, "Aegis selftest | disposable loopback session")
+	fmt.Fprintln(out, "aegis selftest | disposable loopback session")
 	good := []byte(`{"name":"Zoë 東京 🛡️","records":[1,2,3]}`)
 	id := "0123456789abcdef0123456789abcdef"
 	status, _, e := call("PUT", id, "application/json", good)

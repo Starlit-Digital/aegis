@@ -125,7 +125,7 @@ func TestInputRejections(t *testing.T) {
 		{"oversize_declared", `{}`, func(r *http.Request) { r.ContentLength = 1<<20 + 1 }, 413},
 		{"oversize_chunked", strings.Repeat(" ", 1<<20) + `{}`, func(r *http.Request) { r.ContentLength = -1; r.TransferEncoding = []string{"chunked"} }, 413},
 		{"query_policy", `{}`, func(r *http.Request) { r.URL.RawQuery = "max_bytes=99999999" }, 404},
-		{"header_policy", strings.Repeat(" ", 1<<20) + `{}`, func(r *http.Request) { r.Header.Set("X-Aegis-Max-Bytes", "99999999"); r.ContentLength = -1 }, 413},
+		{"header_policy", strings.Repeat(" ", 1<<20) + `{}`, func(r *http.Request) { r.Header.Set("X-aegis-Max-Bytes", "99999999"); r.ContentLength = -1 }, 413},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

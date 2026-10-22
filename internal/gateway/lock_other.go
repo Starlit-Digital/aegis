@@ -8,5 +8,5 @@ import (
 )
 
 func lockSpool(string) (*os.File, error) {
-	return nil, errors.New("Aegis currently supports macOS and Linux")
+	return nil, errors.New("aegis currently supports macOS and Linux")
 }

@@ -41,7 +41,7 @@ func fcgi(ctx context.Context, r *http.Request, route Route, limit int64) (*http
 	if e = record(1, []byte{0, 1, 0, 0, 0, 0, 0, 0}); e != nil {
 		return nil, e
 	}
-	params := map[string]string{"GATEWAY_INTERFACE": "CGI/1.1", "SERVER_PROTOCOL": "HTTP/1.1", "SERVER_SOFTWARE": "Aegis", "REQUEST_METHOD": r.Method, "SCRIPT_FILENAME": route.ScriptFilename, "SCRIPT_NAME": route.ScriptName, "DOCUMENT_ROOT": route.DocumentRoot, "SERVER_NAME": route.ServerName, "SERVER_PORT": strconv.Itoa(route.ServerPort), "REQUEST_URI": r.URL.RequestURI(), "QUERY_STRING": r.URL.RawQuery, "CONTENT_LENGTH": strconv.FormatInt(r.ContentLength, 10), "REMOTE_ADDR": peer(r.RemoteAddr)}
+	params := map[string]string{"GATEWAY_INTERFACE": "CGI/1.1", "SERVER_PROTOCOL": "HTTP/1.1", "SERVER_SOFTWARE": "aegis", "REQUEST_METHOD": r.Method, "SCRIPT_FILENAME": route.ScriptFilename, "SCRIPT_NAME": route.ScriptName, "DOCUMENT_ROOT": route.DocumentRoot, "SERVER_NAME": route.ServerName, "SERVER_PORT": strconv.Itoa(route.ServerPort), "REQUEST_URI": r.URL.RequestURI(), "QUERY_STRING": r.URL.RawQuery, "CONTENT_LENGTH": strconv.FormatInt(r.ContentLength, 10), "REMOTE_ADDR": peer(r.RemoteAddr)}
 	if route.HTTPS {
 		params["HTTPS"] = "on"
 	}

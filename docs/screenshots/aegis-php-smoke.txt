@@ -1,6 +1,6 @@
 > python3 scripts/smoke.py
 PASS  PHP issued a user and purpose bound upload grant
-PASS  Aegis streamed Unicode JSON into encrypted staging
+PASS  aegis streamed Unicode JSON into encrypted staging
 PASS  PHP consumed the exact bytes with SHA256 verification
 PASS  single use retrieval removed the staged object
 PASS  stalled upload terminated by the local timing limit

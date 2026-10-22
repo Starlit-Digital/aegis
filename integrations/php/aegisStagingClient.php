@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace StarlitDigital\Aegis;
+namespace StarlitDigital\aegis;
 
 /** Reference adapter. No routes, autoload hooks, session access or filesystem serving. */
-final class AegisStagingClient
+final class aegisStagingClient
 {
     private const MAX_BYTES = 1048576;
     private const PURPOSE = 'account-import';
@@ -12,15 +12,15 @@ final class AegisStagingClient
     public function __construct(private readonly string $endpoint, string $keyFile)
     {
         if (!preg_match('~^http://127\.0\.0\.1:[0-9]{1,5}/v1/uploads$~D', $endpoint)) {
-            throw new \InvalidArgumentException('Aegis requires a fixed local endpoint');
+            throw new \InvalidArgumentException('aegis requires a fixed local endpoint');
         }
         $stat = lstat($keyFile);
         if ($stat === false || !is_file($keyFile) || is_link($keyFile) || ($stat['mode'] & 0077) !== 0 || $stat['size'] > 128) {
-            throw new \InvalidArgumentException('Aegis key must be a private regular file');
+            throw new \InvalidArgumentException('aegis key must be a private regular file');
         }
         $hex = trim((string) file_get_contents($keyFile));
         if (!preg_match('/^[a-fA-F0-9]{64}$/D', $hex)) {
-            throw new \InvalidArgumentException('Invalid Aegis key');
+            throw new \InvalidArgumentException('Invalid aegis key');
         }
         $this->key = (string) hex2bin($hex);
     }
@@ -45,7 +45,7 @@ final class AegisStagingClient
         $digest = '';
         $ch = curl_init($this->endpoint);
         if ($ch === false) {
-            throw new \RuntimeException('Aegis connection unavailable');
+            throw new \RuntimeException('aegis connection unavailable');
         }
         curl_setopt_array($ch, [
             CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $this->ticket($authenticatedSubject, $registeredId, 'read', time() + 30)],
@@ -55,8 +55,8 @@ final class AegisStagingClient
             CURLOPT_CONNECTTIMEOUT_MS => 1000,
             CURLOPT_TIMEOUT_MS => 15000,
             CURLOPT_HEADERFUNCTION => static function ($handle, string $line) use (&$digest): int {
-                if (stripos($line, 'X-Aegis-SHA256:') === 0) {
-                    $digest = trim(substr($line, strlen('X-Aegis-SHA256:')));
+                if (stripos($line, 'X-aegis-SHA256:') === 0) {
+                    $digest = trim(substr($line, strlen('X-aegis-SHA256:')));
                 }
                 return strlen($line);
             },
@@ -72,7 +72,7 @@ final class AegisStagingClient
             $ok = curl_exec($ch);
             $status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
             if ($ok === false || $status !== 200 || !preg_match('/^[a-f0-9]{64}$/D', $digest) || !hash_equals($digest, hash('sha256', $body))) {
-                throw new \RuntimeException('Aegis retrieval rejected');
+                throw new \RuntimeException('aegis retrieval rejected');
             }
             return $body;
         } finally {

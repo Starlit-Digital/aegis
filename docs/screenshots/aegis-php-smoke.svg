@@ -5,10 +5,10 @@
 <circle cx="87" cy="67" r="6" fill="#ff5f57"/>
 <circle cx="109" cy="67" r="6" fill="#ffbd2e"/>
 <circle cx="131" cy="67" r="6" fill="#28c840"/>
-<text x="640" y="73" text-anchor="middle" font-family="Helvetica,sans-serif" font-size="16" fill="#bacbd1">Aegis · PHP interoperability</text>
+<text x="640" y="73" text-anchor="middle" font-family="Helvetica,sans-serif" font-size="16" fill="#bacbd1">aegis · PHP interoperability</text>
 <text x="90" y="142" font-family="Menlo,monospace" font-size="19" fill="#f2e7d4">&gt; python3 scripts/smoke.py</text>
 <text x="90" y="172" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  PHP issued a user and purpose bound upload grant</text>
-<text x="90" y="202" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  Aegis streamed Unicode JSON into encrypted staging</text>
+<text x="90" y="202" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  aegis streamed Unicode JSON into encrypted staging</text>
 <text x="90" y="232" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  PHP consumed the exact bytes with SHA256 verification</text>
 <text x="90" y="262" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  single use retrieval removed the staged object</text>
 <text x="90" y="292" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  stalled upload terminated by the local timing limit</text>
