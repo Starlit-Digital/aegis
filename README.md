@@ -21,7 +21,7 @@ Aegis separates receiving untrusted bytes from an application's authorization an
 | Observe a proxy instance | Optional separate monitoring listener | Authenticated health and Prometheus counters without URLs, identities, payloads or configuration writes. |
 | Review web server integration | `plan` command | Print nginx, Apache or Caddy examples without changing files or starting listeners. |
 
-A process runs one mode. Use separate processes, ports and accounts where appropriate if you need both boundaries. Proxy mode never exposes staging retrieval or monitoring through its public handler.
+A process runs one mode. Use separate processes, ports and accounts if you need both boundaries. The proxy account must not have staging spool or storage key access. Proxy mode never exposes staging retrieval or monitoring through its public handler.
 
 ```text
 Client → TLS web server → Aegis proxy → fixed Unix socket → PHP front controller

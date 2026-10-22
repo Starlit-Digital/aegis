@@ -16,7 +16,7 @@ Before enabling a future application integration, review record validation, fres
 
 ## Structural proxy boundary
 
-Proxy mode has no upload storage access. Each route identifies one fixed Unix socket and, for FastCGI, an exact front controller, script name, document root, HTTPS setting and server port. None are derived from request headers or paths. Configuration is copied at startup. The process never resolves a backend hostname, follows redirects or retries requests. Local socket ownership is part of the trusted deployment boundary.
+Proxy mode does not open or serve upload storage. Run it under an account without spool or storage key access. Each route identifies one fixed Unix socket and, for FastCGI, an exact front controller, script name, document root, HTTPS setting and server port. None are derived from request headers or paths. Configuration is copied at startup. The process never resolves a backend hostname, follows redirects or retries requests. Local socket ownership is part of the trusted deployment boundary.
 
 The request representation is rebuilt after bounded parsing. Duplicate keys, invalid UTF 8, lone surrogates, ambiguous PHP field spellings, bracket syntax and repeated parameters fail closed. Multipart files are rejected; accepted text fields become ordinary forms. Chunked proxy ingress and request encodings are rejected. Only a fixed application header allowlist is forwarded. Authentication, CSRF, CORS and business authorization remain application responsibilities. Incoming cookies and credentials are forwarded as application data, never accepted as local policy. Host allowlists do not authenticate a caller.
 
