@@ -8,4 +8,4 @@ The selftest creates an actual loopback HTTP server with temporary keys. The smo
 
 Screenshots are generated from captured command output in the established macOS terminal frame. They are rendered transcripts, not claims that production is enabled. `docs/screenshots/*.txt` preserves the actual output used in the images.
 
-Linux cross compilation checks portability, not runtime behavior or cgroup enforcement. Linux service limits need validation on the deployment host before adoption. No live production load, denial of service or exploit test is part of this repository's local verification.
+Linux CI runs the unit and PHP interoperability tests. Local Linux cross compilation additionally checks portability. Neither validates cgroup enforcement. Linux service limits need validation on the deployment host before adoption. No live production load, denial of service or exploit test is part of this repository's local verification.

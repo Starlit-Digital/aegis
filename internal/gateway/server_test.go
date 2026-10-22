@@ -353,3 +353,29 @@ func TestValidSurrogatesAndFailedGrantBurn(t *testing.T) {
 		t.Fatal("failed grant reused", w.Code)
 	}
 }
+
+func TestObjectKeysSeparateUsersAndIdentifiers(t *testing.T) {
+	s, _ := setup(t)
+	a, e := s.objectAEAD(testID, "alice")
+	if e != nil {
+		t.Fatal(e)
+	}
+	var ciphertext bytes.Buffer
+	w := encryptedWriter{w: &ciphertext, a: a, id: testID, buf: make([]byte, 0, chunkSize)}
+	plain := []byte("sensitive payroll")
+	if _, e = w.Write(plain); e != nil {
+		t.Fatal(e)
+	}
+	if e = w.flush(); e != nil {
+		t.Fatal(e)
+	}
+	for _, pair := range [][2]string{{testID, "bob"}, {"1123456789abcdef0123456789abcdef", "alice"}} {
+		wrong, e := s.objectAEAD(pair[0], pair[1])
+		if e != nil {
+			t.Fatal(e)
+		}
+		if e = decrypt(io.Discard, bytes.NewReader(ciphertext.Bytes()), wrong, testID, int64(len(plain))); e == nil {
+			t.Fatal("object key accepted another identity")
+		}
+	}
+}

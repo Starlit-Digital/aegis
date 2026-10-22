@@ -2,7 +2,7 @@
 
 A small Go upload guardian with a strict local policy and encrypted ephemeral staging.
 
-Version **0.1.0**. Early development, tested on macOS. Linux builds are checked by cross compilation. Aegis is dormant and has no application integration or enabled production deployment.
+Version **0.1.0**. Early development, tested on macOS and in Linux CI, with Linux cross compilation checked locally. Aegis is dormant and has no application integration or enabled production deployment.
 
 ![Aegis local test session](docs/screenshots/aegis-selftest.png)
 
@@ -51,7 +51,7 @@ Every policy value is read from a local JSON file once at startup. There is no H
 
 Go's managed memory target is not an RSS guarantee. The supplied Linux service template adds cgroup memory, CPU, task and file descriptor caps. The macOS test does not claim to reproduce Linux cgroup enforcement. Stream buffers are bounded, but an individual JSON token may allocate up to the body cap before the stricter token validation rejects it.
 
-There are no caller supplied filenames, storage paths, redirect destinations or download URLs. Staging uses random private file names, a private directory with one process owner, AES 256 GCM chunks bound to object identity and chunk order, and a SHA256 receipt. Temporary files are removed after rejection, expiry, retrieval or graceful shutdown. Startup removes abandoned session directories under the exclusive spool lock. A bounded replay ledger retains spent grant IDs until expiry across restarts; these small records contain no payload or user identity. A crash can leave encrypted bytes until the next startup or an operator removes the dedicated spool. Storage is not durable import history.
+There are no caller supplied filenames, storage paths, redirect destinations or download URLs. Staging uses random private file names, a private directory with one process owner, AES 256 GCM chunks with separately derived keys per user, purpose and object, bound to chunk order, and a SHA256 receipt. Temporary files are removed after rejection, expiry, retrieval or graceful shutdown. Startup removes abandoned session directories under the exclusive spool lock. A bounded replay ledger retains spent grant IDs until expiry across restarts; these small records contain no payload or user identity. A crash can leave encrypted bytes until the next startup or an operator removes the dedicated spool. Storage is not durable import history.
 
 ## HTTP contract
 

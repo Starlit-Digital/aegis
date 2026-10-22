@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -30,7 +31,7 @@ type Server struct {
 	requests   int
 	c          Config
 	key        []byte
-	a          cipher.AEAD
+	storageKey []byte
 	dir        string
 	mu         sync.Mutex
 	objects    map[string]object
@@ -79,14 +80,6 @@ func New(c Config, key, storageKey []byte, dir string) (*Server, error) {
 	if e != nil {
 		return nil, e
 	}
-	block, e := aes.NewCipher(storageKey)
-	if e != nil {
-		return nil, e
-	}
-	a, e := cipher.NewGCM(block)
-	if e != nil {
-		return nil, e
-	}
 	c.Origins = append([]string(nil), c.Origins...)
 	used, e := loadGrants(dir, time.Now())
 	if e != nil {
@@ -94,12 +87,13 @@ func New(c Config, key, storageKey []byte, dir string) (*Server, error) {
 		return nil, e
 	}
 	keepLock = true
-	return &Server{lock: lock, c: c, key: append([]byte(nil), key...), a: a, dir: session, objects: map[string]object{}, used: used, slots: make(chan struct{}, c.MaxConcurrent), now: time.Now}, nil
+	return &Server{lock: lock, c: c, key: append([]byte(nil), key...), storageKey: append([]byte(nil), storageKey...), dir: session, objects: map[string]object{}, used: used, slots: make(chan struct{}, c.MaxConcurrent), now: time.Now}, nil
 }
 
 // Close is called after HTTP shutdown has drained handlers.
 func (s *Server) Close() error {
 	clear(s.key)
+	clear(s.storageKey)
 	e := os.RemoveAll(s.dir)
 	if s.lock != nil {
 		s.lock.Close()
@@ -293,7 +287,12 @@ func (s *Server) upload(w http.ResponseWriter, r *http.Request, t Ticket) {
 	path = file.Name()
 	defer file.Close()
 	h := sha256.New()
-	ew := &encryptedWriter{w: file, a: s.a, id: t.ID, buf: make([]byte, 0, chunkSize)}
+	a, e := s.objectAEAD(t.ID, t.Subject)
+	if e != nil {
+		fail(w, 500)
+		return
+	}
+	ew := &encryptedWriter{w: file, a: a, id: t.ID, buf: make([]byte, 0, chunkSize)}
 	defer clear(ew.buf)
 	limited := http.MaxBytesReader(w, r.Body, s.c.MaxBytes)
 	var bytesRead int64
@@ -386,8 +385,13 @@ func (s *Server) retrieve(w http.ResponseWriter, r *http.Request, t Ticket) {
 	}
 	defer f.Close()
 
+	a, e := s.objectAEAD(t.ID, t.Subject)
+	if e != nil {
+		fail(w, 500)
+		return
+	}
 	// Authenticate every chunk and the complete expected length before releasing bytes.
-	if e := decrypt(io.Discard, f, s.a, t.ID, o.bytes); e != nil {
+	if e := decrypt(io.Discard, f, a, t.ID, o.bytes); e != nil {
 		fail(w, 500)
 		return
 	}
@@ -400,7 +404,20 @@ func (s *Server) retrieve(w http.ResponseWriter, r *http.Request, t Ticket) {
 	w.Header().Set("Content-Length", fmt.Sprint(o.bytes))
 	w.Header().Set("X-Aegis-SHA256", o.digest)
 	// The spool is private to the service user; OS sandboxing prevents other writers.
-	if e := decrypt(w, f, s.a, t.ID, o.bytes); e != nil {
+	if e := decrypt(w, f, a, t.ID, o.bytes); e != nil {
 		panic(http.ErrAbortHandler)
 	}
+}
+
+// A separate derived key per user, purpose and object keeps GCM nonce use small.
+func (s *Server) objectAEAD(id, subject string) (cipher.AEAD, error) {
+	mac := hmac.New(sha256.New, s.storageKey)
+	mac.Write([]byte("aegis-object-v1\x00" + s.c.Purpose + "\x00" + subject + "\x00" + id))
+	key := mac.Sum(nil)
+	defer clear(key)
+	block, e := aes.NewCipher(key)
+	if e != nil {
+		return nil, e
+	}
+	return cipher.NewGCM(block)
 }
