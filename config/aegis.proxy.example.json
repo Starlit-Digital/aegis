@@ -1,0 +1,30 @@
+{
+  "enabled": false,
+  "mode": "proxy",
+  "listen": "127.0.0.1:8099",
+  "proxy": {
+    "hosts": ["app.example.com"],
+    "max_bytes": 1048576,
+    "max_depth": 16,
+    "max_tokens": 10000,
+    "max_string_bytes": 4096,
+    "max_response_bytes": 4194304,
+    "request_seconds": 15,
+    "max_concurrent": 2,
+    "routes": [
+      {
+        "prefix": "/api",
+        "protocol": "fastcgi",
+        "socket": "/run/php/app.sock",
+        "server_name": "app.example.com",
+        "script_filename": "/srv/app/public/index.php",
+        "script_name": "/index.php",
+        "document_root": "/srv/app/public",
+        "server_port": 443,
+        "https": true,
+        "methods": ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE"],
+        "formats": ["none", "json", "form", "multipart"]
+      }
+    ]
+  }
+}

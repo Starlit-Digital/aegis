@@ -2,7 +2,7 @@
 
 namespace StarlitDigital\Aegis;
 
-/** Dormant adapter. No routes, autoload hooks, session access or filesystem serving. */
+/** Reference adapter. No routes, autoload hooks, session access or filesystem serving. */
 final class AegisStagingClient
 {
     private const MAX_BYTES = 1048576;

@@ -1,5 +1,5 @@
 > ./build/aegis version
-Aegis 0.1.0
+Aegis 0.2.0
 
 > ./build/aegis selftest
 Aegis selftest | disposable loopback session

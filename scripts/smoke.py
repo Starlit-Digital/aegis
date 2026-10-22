@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise the built process and dormant PHP adapter using disposable local state."""
+"""Exercise the built process and reference PHP adapter using disposable local state."""
 import hashlib, http.client, json, os, pathlib, secrets, signal, socket, subprocess, tempfile, time
 root=pathlib.Path(__file__).resolve().parents[1]
 with tempfile.TemporaryDirectory(prefix='aegis-smoke-') as tmp:

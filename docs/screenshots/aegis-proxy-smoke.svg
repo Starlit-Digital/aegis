@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<rect width="1280" height="720" fill="#102330"/>
+<rect x="60" y="40" width="1160" height="640" rx="16" fill="#0e1b22" stroke="#526268"/>
+<path d="M76 40H1204Q1220 40 1220 56V95H60V56Q60 40 76 40" fill="#1b2c35"/>
+<circle cx="87" cy="67" r="6" fill="#ff5f57"/>
+<circle cx="109" cy="67" r="6" fill="#ffbd2e"/>
+<circle cx="131" cy="67" r="6" fill="#28c840"/>
+<text x="640" y="73" text-anchor="middle" font-family="Helvetica,sans-serif" font-size="16" fill="#bacbd1">Aegis · Structural proxy and PHP FPM</text>
+<text x="90" y="142" font-family="Menlo,monospace" font-size="19" fill="#f2e7d4">&gt; python3 scripts/proxy-smoke.py</text>
+<text x="90" y="172" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  http: Unicode JSON rebuilt, numbers preserved, fixed local backend</text>
+<text x="90" y="202" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  http: duplicate keys, PHP override, prefix confusion and public metrics blocked</text>
+<text x="90" y="232" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  http: private metrics and stalled request deadline</text>
+<text x="90" y="262" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  fastcgi: Unicode JSON rebuilt, numbers preserved, fixed local backend</text>
+<text x="90" y="292" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  real PHP FPM parsed the rebuilt form and fixed CGI environment</text>
+<text x="90" y="322" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  fastcgi: duplicate keys, PHP override, prefix confusion and public metrics blocked</text>
+<text x="90" y="352" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  fastcgi: private metrics and stalled request deadline</text>
+<text x="90" y="382" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">PASS  all test processes stopped; temporary config, keys, sockets and PHP fixture removed</text>
+<text x="90" y="412" font-family="Menlo,monospace" font-size="19" fill="#bacbd1"></text>
+</svg>

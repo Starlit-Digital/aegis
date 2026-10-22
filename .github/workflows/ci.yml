@@ -15,6 +15,11 @@ jobs:
       - run: make verify
       - run: make compile
       - run: ./build/aegis selftest
-      - run: sudo apt-get update && sudo apt-get install -y php-cli php-curl
+      - run: sudo apt-get update && sudo apt-get install -y php-cli php-curl php-fpm
       - run: php -l integrations/php/AegisStagingClient.php && python3 scripts/smoke.py
+      - run: |
+          PHP_FPM_BIN=$(find /usr/sbin -maxdepth 1 -name 'php-fpm*' -type f | sort | tail -n 1)
+          mkdir -p build/test-bin
+          ln -s "$PHP_FPM_BIN" build/test-bin/php-fpm
+          PATH="$PWD/build/test-bin:$PATH" python3 scripts/proxy-smoke.py
       - run: GOOS=darwin GOARCH=arm64 go build -o build/aegis-darwin-arm64 ./cmd/aegis

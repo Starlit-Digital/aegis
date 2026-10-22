@@ -1,0 +1,9 @@
+> python3 scripts/proxy-smoke.py
+PASS  http: Unicode JSON rebuilt, numbers preserved, fixed local backend
+PASS  http: duplicate keys, PHP override, prefix confusion and public metrics blocked
+PASS  http: private metrics and stalled request deadline
+PASS  fastcgi: Unicode JSON rebuilt, numbers preserved, fixed local backend
+PASS  real PHP FPM parsed the rebuilt form and fixed CGI environment
+PASS  fastcgi: duplicate keys, PHP override, prefix confusion and public metrics blocked
+PASS  fastcgi: private metrics and stalled request deadline
+PASS  all test processes stopped; temporary config, keys, sockets and PHP fixture removed

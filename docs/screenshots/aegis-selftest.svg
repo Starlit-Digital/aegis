@@ -7,7 +7,7 @@
 <circle cx="131" cy="67" r="6" fill="#28c840"/>
 <text x="640" y="73" text-anchor="middle" font-family="Helvetica,sans-serif" font-size="16" fill="#bacbd1">Aegis · Local selftest</text>
 <text x="90" y="142" font-family="Menlo,monospace" font-size="19" fill="#f2e7d4">&gt; ./build/aegis version</text>
-<text x="90" y="172" font-family="Menlo,monospace" font-size="19" fill="#e8c58e">Aegis 0.1.0</text>
+<text x="90" y="172" font-family="Menlo,monospace" font-size="19" fill="#e8c58e">Aegis 0.2.0</text>
 <text x="90" y="202" font-family="Menlo,monospace" font-size="19" fill="#bacbd1"></text>
 <text x="90" y="216" font-family="Menlo,monospace" font-size="19" fill="#f2e7d4">&gt; ./build/aegis selftest</text>
 <text x="90" y="246" font-family="Menlo,monospace" font-size="19" fill="#bacbd1">Aegis selftest | disposable loopback session</text>

@@ -45,3 +45,28 @@ func TestNonLoopbackAndRaisedLimits(t *testing.T) {
 		}
 	}
 }
+
+func TestProxyExamplesAndDisabledStartup(t *testing.T) {
+	p := "../../config/aegis.proxy.example.json"
+	c, e := load(p)
+	if e != nil || c.Mode != "proxy" || c.Enabled {
+		t.Fatal(c, e)
+	}
+	if e = run([]string{"serve", "--config", p}); e == nil || e.Error() != "service disabled in local configuration" {
+		t.Fatal(e)
+	}
+	if e = run([]string{"plan", "--config", p, "--server", "nginx"}); e != nil {
+		t.Fatal(e)
+	}
+	if e = run([]string{"plan", "--config", p, "--server", "unknown"}); e == nil {
+		t.Fatal("unknown planner accepted")
+	}
+	c.AdminListen = "0.0.0.0:8100"
+	c.AdminKeyFile = "/tmp/admin.key"
+	b, _ := json.Marshal(c)
+	bad := filepath.Join(t.TempDir(), "bad.json")
+	os.WriteFile(bad, b, 0600)
+	if _, e = load(bad); e == nil {
+		t.Fatal("public admin listener accepted")
+	}
+}

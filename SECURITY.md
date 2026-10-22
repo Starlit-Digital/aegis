@@ -1,6 +1,6 @@
 # Aegis security model
 
-Version 0.1.0 is an early staging service, dormant by default. Report suspected vulnerabilities through the GitHub repository's private vulnerability reporting channel if available. Do not publish secrets or uploaded data in an issue.
+Version 0.2.0 is an early request normalization and staging service, disabled by default. Report suspected vulnerabilities through the GitHub repository's private vulnerability reporting channel if available. Do not publish secrets or uploaded data in an issue.
 
 Untrusted clients control body bytes and ordinary HTTP headers. They cannot read local config, signing keys, storage keys or the spool. The application issuer, local administrator, service user, kernel, Go runtime and reverse proxy remain trusted. A compromised issuer can authorize operations for its subjects. Local administrators and a compromised service process can access plaintext while it is being handled. Encryption of staging does not remove that trust.
 
@@ -13,3 +13,13 @@ The Go memory setting is soft. Linux deployment must retain the cgroup memory li
 Staging is ephemeral. Rejected, expired and consumed objects are removed. Graceful shutdown drains handlers and removes its private session directory; next startup removes abandoned sessions under the spool lock. Failed retrieval is not resumable. Loss or corruption of staging requires a fresh upload. It must never be the only copy of user work.
 
 Before enabling a future application integration, review record validation, fresh user authorization, revocation, atomic commit, import quotas and business encryption separately. Moving ingress into Go does not fix existing PHP logic or runtime vulnerabilities.
+
+## Structural proxy boundary
+
+Proxy mode has no upload storage access. Each route identifies one fixed Unix socket and, for FastCGI, an exact front controller, script name, document root, HTTPS setting and server port. None are derived from request headers or paths. Configuration is copied at startup. The process never resolves a backend hostname, follows redirects or retries requests. Local socket ownership is part of the trusted deployment boundary.
+
+The request representation is rebuilt after bounded parsing. Duplicate keys, invalid UTF 8, lone surrogates, ambiguous PHP field spellings, bracket syntax and repeated parameters fail closed. Multipart files are rejected; accepted text fields become ordinary forms. Chunked proxy ingress and request encodings are rejected. Only a fixed application header allowlist is forwarded. Authentication, CSRF, CORS and business authorization remain application responsibilities. Incoming cookies and credentials are forwarded as application data, never accepted as local policy. Host allowlists do not authenticate a caller.
+
+At most two operations run concurrently. Backend response bodies are limited to 4 MiB and fully buffered before delivery. FastCGI stderr is discarded with an 8 KiB budget, output records are bounded to 4,096 and headers to 4 KiB. Sockets receive request deadlines and close on cancellation. Responses cannot ask the edge to read an arbitrary file through X-Sendfile or X-Accel-Redirect. The optional monitoring listener uses a separate local key and exposes fixed aggregate counters, with no configuration writes or request history.
+
+Aegis is not a complete mitigation for CVE-2026-109618 or CVE-2026-109619. Both concern PHP runtime state beyond upload syntax. Update PHP to a fixed supported release, restart workers and consult the official notices linked in README.md. The proxy requires compatibility review for signed bodies, PHP array form fields, non ASCII paths and streaming responses. It must not be silently placed in front of every application route.

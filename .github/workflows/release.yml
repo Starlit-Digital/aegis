@@ -1,0 +1,57 @@
+name: Release Aegis
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - run: test "$GITHUB_REF_NAME" = "v$(cat VERSION)"
+      - run: make verify && make compile && ./build/aegis selftest
+      - run: python3 scripts/proxy-smoke.py
+  binaries:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: false
+      - run: |
+          mkdir -p dist
+          for platform in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64; do
+            GOOS="${platform%/*}" GOARCH="${platform#*/}" CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=$(cat VERSION)" -o "dist/aegis-${platform%/*}-${platform#*/}" ./cmd/aegis
+          done
+          cd dist
+          sha256sum aegis-* > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aegis-release
+          path: dist/*
+          if-no-files-found: error
+  publish:
+    needs: binaries
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: aegis-release
+          path: dist
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --verify-tag --prerelease --title "Aegis $GITHUB_REF_NAME" --notes-file CHANGELOG.md
+          gh release upload "$GITHUB_REF_NAME" dist/* --clobber
